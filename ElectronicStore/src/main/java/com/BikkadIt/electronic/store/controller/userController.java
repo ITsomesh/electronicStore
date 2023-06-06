@@ -68,13 +68,13 @@ public class userController
 
     /**
      * @auther Er~some
-     * @apiNote Thsi api is user to delete the user by userId
+     * @apiNote This api is user to delete the user by userId
      * @param userId
      * @return
      */
     //delete
     @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<ApiResponse>deletUser(@PathVariable String userId){
+    public ResponseEntity<ApiResponse>deleteUser(@PathVariable String userId){
         logger.info("Request starting for service layer to delete the user");
         userService.deletUser(userId);
         ApiResponse message = ApiResponse.builder()
@@ -139,9 +139,9 @@ public class userController
     @GetMapping("/keyWord/{keyWord}")
     public ResponseEntity<List<UserDto>>searchUser(@PathVariable String keyWord){
         logger.info("Request starting for service layer to get the user by keyword");
-        List<UserDto> userDtos = this.userService.searchUser(keyWord);
+        List<UserDto> userDto = this.userService.searchUser(keyWord);
         logger.info("Request completed for service layer to get the user by keyword");
-        return new ResponseEntity<>(userDtos,HttpStatus.OK);
+        return new ResponseEntity<>(userDto,HttpStatus.OK);
     }
 
 }

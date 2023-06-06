@@ -24,8 +24,8 @@ public class User {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
     private String userId;
+    
     @Column(name="user_name")
-
     private String name;
 
     @Column(name="user_emailId",unique = true)
