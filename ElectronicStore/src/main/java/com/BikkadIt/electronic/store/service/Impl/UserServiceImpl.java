@@ -46,7 +46,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
         log.info("Request started to Update the user");
-        User user = userRepo.findById(userId).orElseThrow(() -> new RuntimeException("User Not Found"));
+        User user = userRepo
+                .findById(userId).orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
         user.setName(userDto.getName());
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService {
         log.info("Request Started to delete user");
         User userNotFound = userRepo
                 .findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User","Id",userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
         log.info("Request completed to delete user");
         userRepo.delete(userNotFound);
 
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getByEmilId(String emailId) {
         log.info("Request started to get user by emailId");
         User user = userRepo.findByEmailId(emailId)
-                .orElseThrow(() -> new ResourceNotFoundException("User","Id",emailId));
+                .orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
         log.info("Request completed to get user by emailId");
         return entityToDto(user);
     }
