@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -40,7 +40,7 @@ public class userController
     //create
     @PostMapping
 
-    public ResponseEntity<UserDto>createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto>createUser(@Valid @RequestBody UserDto userDto){
         logger.info("Request starting for service layer to create the user");
         UserDto newUser = userService.createUser(userDto);
         logger.info("Request completed for service layer to create the user");
@@ -58,6 +58,7 @@ public class userController
     //update
     @PostMapping("/{userId}")
     public ResponseEntity<UserDto>updateUser(
+            @Valid
             @PathVariable("userId")String userId,
             @RequestBody UserDto userDto ){
         logger.info("Request starting for service layer to get the user by userId",userId);
