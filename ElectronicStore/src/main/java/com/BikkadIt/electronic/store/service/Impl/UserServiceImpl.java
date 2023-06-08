@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,10 +63,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUser() {
+    public List<UserDto> getAllUser(int pageNumber, int pageSize) {
         log.info("Request started to get all user");
-        List<User> allUser = userRepo.findAll();
-        List<UserDto> collect = allUser.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+        Pageable pageable=PageRequest.of(pageNumber, pageSize);
+
+        Page<User> allUser = userRepo.findAll(pageable);
+        List<User> content = allUser.getContent();
+
+        List<UserDto> collect = content.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
         log.info("Request completed to get all user");
         return collect;
     }

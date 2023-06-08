@@ -23,7 +23,7 @@ public class UserDto {
     private String name;
 
     @Email(message = "Enter Valid EmailId !!")
-    @Pattern(regexp = "[a-z0-9][-a-z0-9.-]+@([-a-z0-9]+\\.)+[a-z]{2,5}$",message ="Invalid User" )
+    @Pattern(regexp = "[a-z0-9][-a-z0-9.-]+@([-a-z0-9]+\\.)+[a-z]{2,5}$",message ="Invalid User EmailId" )
     @NotBlank
     private String emailId;
 
