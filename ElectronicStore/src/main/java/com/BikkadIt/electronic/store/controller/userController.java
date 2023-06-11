@@ -96,11 +96,13 @@ public class userController
     @GetMapping("/getAll")
     public ResponseEntity<List<UserDto>>getAllUser(
             @RequestParam(value="pageNumber",defaultValue = "0",required = false)int pageNumber,
-            @RequestParam(value = "pageSize",defaultValue = "2",required = false)int pageSize
+            @RequestParam(value = "pageSize",defaultValue = "2",required = false)int pageSize,
+            @RequestParam(value = "sortBy",defaultValue = "name",required = false)String sortBy,
+            @RequestParam(value = "sortDir",defaultValue = "asc",required = false)String sortDir
     ){
 
         logger.info("Request starting for service layer to get all user");
-        List<UserDto> allUser = userService.getAllUser(pageNumber,pageSize);
+        List<UserDto> allUser = userService.getAllUser(pageNumber, pageSize, sortBy, sortDir);
         logger.info("Request completed for service layer to get all user");
         return new ResponseEntity<>(allUser,HttpStatus.OK);
     }
