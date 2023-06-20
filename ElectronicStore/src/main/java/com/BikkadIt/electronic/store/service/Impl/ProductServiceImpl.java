@@ -7,17 +7,27 @@ import com.BikkadIt.electronic.store.exception.ResourceNotFoundException;
 import com.BikkadIt.electronic.store.helper.Helper;
 import com.BikkadIt.electronic.store.repository.ProductRepository;
 import com.BikkadIt.electronic.store.service.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@Slf4j
 
 public class ProductServiceImpl implements ProductService {
 
@@ -25,11 +35,20 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository productRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Value("${product.image.path}")
+    private String imagePath;
 
 
     @Override
     public ProductDto create(ProductDto productDto) {
+
         Product pro = modelMapper.map(productDto, Product.class);
+        //Pro Id
+        String proId= UUID.randomUUID().toString();
+        pro.setProductId(proId);
+
+        //Date
+        pro.setAddedDate(new Date());
         Product savePro = productRepository.save(pro);
         return modelMapper.map(savePro,ProductDto.class);
     }
@@ -46,6 +65,7 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(productDto.getQuantity());
         product.setLive(productDto.isLive());
         product.setStock(productDto.isStock());
+        product.setProductImageName(productDto.getProductImageName());
         Product updatedPro = productRepository.save(product);
         return modelMapper.map(updatedPro,ProductDto.class);
     }
@@ -55,6 +75,17 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Not Found By Given ProductId"));
+        String fullPath=imagePath+product.getProductImageName();
+        try {
+            Path path = Paths.get(fullPath);
+            Files.delete(path);
+        } catch (NoSuchFileException ex){
+            log.info("User Image Not Found");
+        }
+        catch (IOException e ){
+            throw new RuntimeException();
+        }
+        log.info("Request completed to delete productpoii");
         productRepository.delete(product);
     }
 
@@ -86,13 +117,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PageableResponse<ProductDto> searchByTitle(String subTitle,int pageNumber,int pageSize,String sortBy,String SortDir) {
-        Sort sort = (SortDir.equalsIgnoreCase("desc"))
-                ? (Sort.by(sortBy).descending())
-                : (Sort.by(sortBy).ascending());
-        Pageable pageable= PageRequest.of(pageNumber, pageSize,sort);
-        Page<Product> page = productRepository.findByTitleContaining(subTitle, (java.awt.print.Pageable) pageable);
-        return Helper.getPageableResponse(page,ProductDto.class);
+    public PageableResponse<ProductDto> searchByTitle(String subTitle, int pageNumber, int pageSize, String sortBy, String SortDir) {
+        return null;
+    }
+
+//    @Override
+//    public PageableResponse<ProductDto> searchByTitle(String subTitle,int pageNumber,int pageSize,String sortBy,String SortDir) {
+//        Sort sort = (SortDir.equalsIgnoreCase("desc"))
+//                ? (Sort.by(sortBy).descending())
+//                : (Sort.by(sortBy).ascending());
+//        Pageable pageable= PageRequest.of(pageNumber, pageSize,sort);
+//        Page<Product> page = productRepository.findByTitleContaining(subTitle,Pageable);
+//        return Helper.getPageableResponse(page,ProductDto.class);
 
     }
-}
+
