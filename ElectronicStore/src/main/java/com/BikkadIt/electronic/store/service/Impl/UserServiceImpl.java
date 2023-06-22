@@ -1,7 +1,11 @@
 package com.BikkadIt.electronic.store.service.Impl;
 
+import com.BikkadIt.electronic.store.Constants.AppConstants;
 import com.BikkadIt.electronic.store.controller.userController;
+import com.BikkadIt.electronic.store.dtos.ApiResponse;
+import com.BikkadIt.electronic.store.dtos.PageableResponse;
 import com.BikkadIt.electronic.store.exception.ResourceNotFoundException;
+import com.BikkadIt.electronic.store.helper.Helper;
 import com.BikkadIt.electronic.store.repository.UserRepo;
 import com.BikkadIt.electronic.store.dtos.UserDto;
 import com.BikkadIt.electronic.store.entities.User;
@@ -10,12 +14,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Value("${user.profile.image.path}")
+    private String imagePath;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -51,7 +64,7 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UserDto userDto, String userId) {
         log.info("Request started to Update the user");
         User user = userRepo
-                .findById(userId).orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
+                .findById(userId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND));
         user.setName(userDto.getName());
         user.setAbout(userDto.getAbout());
         user.setGender(userDto.getGender());
@@ -64,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUser(int pageNumber, int pageSize,String sortBy,String sortDir)
+    public PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir)
     {
         log.info("Request started to get all user");
         Sort sort = (sortDir.equalsIgnoreCase("desc"))
@@ -73,22 +86,42 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable=PageRequest.of(pageNumber, pageSize,sort);
 
-        Page<User> allUser = userRepo.findAll(pageable);
-        List<User> content = allUser.getContent();
+        Page<User> page = userRepo.findAll(pageable);
+//        List<User> content = page.getContent();
+//        List<UserDto> collect = content.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
+//        log.info("Request completed to get all user");
+//        PageableResponse<UserDto>response=new PageableResponse<>();
+//        response.setContent(collect);
+//        response.setPageNumber(page.getNumber());
+//        response.setPageSize(page.getSize());
+//        response.setTotalElements(page.getTotalElements());
+//        response.setTotalPages(page.getTotalPages());
+//        response.setLastPage(page.isLast());
+//        return response;
+        PageableResponse<UserDto> response = Helper.getPageableResponse(page, UserDto.class);
+        return response;
 
-        List<UserDto> collect = content.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
-        log.info("Request completed to get all user");
-        return collect;
     }
 
     @Override
     public void deletUser(String userId) {
         log.info("Request Started to delete user");
-        User userNotFound = userRepo
+        User user = userRepo
                 .findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND));
+        //delete user profile image
+
+        String fullPath = imagePath + user.getUserImage();
+        try {
+            Path path = Paths.get(fullPath);
+            Files.delete(path);
+        }catch (NoSuchFileException ex){
+            log.info("User Image not found !!");
+        }catch (IOException e){
+            throw new RuntimeException();
+        }
         log.info("Request completed to delete user");
-        userRepo.delete(userNotFound);
+        userRepo.delete(user);
 
     }
 
@@ -97,7 +130,7 @@ public class UserServiceImpl implements UserService {
         log.info("Request Started to get user by Id");
         User userNotFound = userRepo
                 .findById(userId)
-                .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new RuntimeException(AppConstants.NOT_FOUND));
         log.info("Request completed to get user by Id");
         return entityToDto(userNotFound);
     }
@@ -106,7 +139,7 @@ public class UserServiceImpl implements UserService {
     public UserDto getByEmilId(String emailId) {
         log.info("Request started to get user by emailId");
         User user = userRepo.findByEmailId(emailId)
-                .orElseThrow(() -> new ResourceNotFoundException("User Not Found with This Id !!"));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.NOT_FOUND));
         log.info("Request completed to get user by emailId");
         return entityToDto(user);
     }
