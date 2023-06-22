@@ -1,10 +1,13 @@
 package com.BikkadIt.electronic.store.service.Impl;
 
+import com.BikkadIt.electronic.store.Constants.AppConstants;
 import com.BikkadIt.electronic.store.dtos.PageableResponse;
 import com.BikkadIt.electronic.store.dtos.ProductDto;
+import com.BikkadIt.electronic.store.entities.Category;
 import com.BikkadIt.electronic.store.entities.Product;
 import com.BikkadIt.electronic.store.exception.ResourceNotFoundException;
 import com.BikkadIt.electronic.store.helper.Helper;
+import com.BikkadIt.electronic.store.repository.CategoryRepo;
 import com.BikkadIt.electronic.store.repository.ProductRepository;
 import com.BikkadIt.electronic.store.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,8 @@ public class ProductServiceImpl implements ProductService {
     private ModelMapper modelMapper;
     @Value("${product.image.path}")
     private String imagePath;
+    @Autowired
+    private CategoryRepo categoryRepo;
 
 
     @Override
@@ -57,7 +62,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto update(ProductDto productDto, String productId) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product Not Found By Given ProductId"));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.PRODUCT_NOT_FOUND));
         product.setTitle(productDto.getTitle());
         product.setDescription(productDto.getDescription());
         product.setPrice(productDto.getPrice());
@@ -74,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
     public void delete(String productId) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product Not Found By Given ProductId"));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.PRODUCT_DELETE));
         String fullPath=imagePath+product.getProductImageName();
         try {
             Path path = Paths.get(fullPath);
@@ -92,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getById(String productId) {
         Product productById = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Product Not Found By Given ProductId"));
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.PRODUCT_NOT_FOUND));
         return modelMapper.map(productById,ProductDto.class);
     }
 
@@ -119,6 +124,23 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PageableResponse<ProductDto> searchByTitle(String subTitle, int pageNumber, int pageSize, String sortBy, String SortDir) {
         return null;
+    }
+
+    @Override
+    public ProductDto createWithCategory(ProductDto productDto, String categoryId) {
+        Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException(AppConstants.CATEGORY_ID));
+
+        Product pro = modelMapper.map(productDto, Product.class);
+        //Pro Id
+        String proId= UUID.randomUUID().toString();
+        pro.setProductId(proId);
+
+        //Date
+        pro.setAddedDate(new Date());
+        pro.setCategory(category);
+        Product savePro = productRepository.save(pro);
+        return modelMapper.map(savePro,ProductDto.class);
+
     }
 
 //    @Override
