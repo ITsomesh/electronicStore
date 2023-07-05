@@ -10,6 +10,7 @@ import com.BikkadIt.electronic.store.helper.Helper;
 import com.BikkadIt.electronic.store.repository.CategoryRepo;
 import com.BikkadIt.electronic.store.repository.ProductRepository;
 import com.BikkadIt.electronic.store.service.ProductService;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
+@Builder
 
 public class ProductServiceImpl implements ProductService {
 

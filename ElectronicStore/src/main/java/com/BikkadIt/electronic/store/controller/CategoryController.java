@@ -7,15 +7,14 @@ import com.BikkadIt.electronic.store.dtos.PageableResponse;
 import com.BikkadIt.electronic.store.dtos.ProductDto;
 import com.BikkadIt.electronic.store.service.CategoryService;
 import com.BikkadIt.electronic.store.service.ProductService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
+@Slf4j
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
@@ -25,37 +24,35 @@ public class CategoryController {
     @Autowired
     private ProductService productService;
 
-    private Logger logger = LoggerFactory.getLogger(userController.class);
 
-
-    /**
-     *
-     * @param categoryDto
-     * @return
-     */
     @PostMapping
     public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+       log.info("Request starting for service layer to create the Category");
         CategoryDto categoryDto1 = categoryService.create(categoryDto);
+        log.info("Request completed for service layer to create the Category");
         return new ResponseEntity<>(categoryDto1, HttpStatus.CREATED);
     }
 
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,
                                                       @PathVariable String categoryId) {
+        log.info("Request starting for service layer to Update the Category {} :",categoryId);
         CategoryDto updatedCategory = categoryService.update(categoryDto, categoryId);
+        log.info("Request completed for service layer to Update the Category {} :",categoryId);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
 
     }
 
     @DeleteMapping("/delete/{categoryId}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable String categoryId) {
-
+        log.info("Request starting for service layer to Delete the Category {} :",categoryId);
         categoryService.delete(categoryId);
         ApiResponse message = ApiResponse.builder()
                 .message(AppConstants.CATEGORY_DELETE)
                 .success(true)
                 .status(HttpStatus.OK)
                 .build();
+        log.info("Request completed for service layer to Delete the Category {} :",categoryId);
         return new ResponseEntity<>(message, HttpStatus.OK);
 
 
@@ -67,7 +64,9 @@ public class CategoryController {
             @RequestParam(value = "sortBy",defaultValue = "tittle",required = false)String sortBy,
             @RequestParam(value = "sortDir",defaultValue = "asc",required = false)String sortDir
     ){
+        log.info("Request starting for service layer to Get All  the Category");
         PageableResponse<CategoryDto> allCategory = categoryService.getAll(pageNumber, pageSize, sortBy, sortDir);
+        log.info("Request completed for service layer to Get All  the Category ");
         return new ResponseEntity<>(allCategory,HttpStatus.OK);
     }
 
@@ -77,7 +76,9 @@ public class CategoryController {
             @PathVariable ("categoryId")String categoryId,
             @RequestBody ProductDto productDto
             ){
+        log.info("Request starting for service layer to post the Category {} :",categoryId);
         ProductDto proWithCategory = productService.createWithCategory(productDto, categoryId);
+        log.info("Request completed for service layer to post the Category {} :",categoryId);
         return  new ResponseEntity<>(proWithCategory,HttpStatus.CREATED);
 
     }
