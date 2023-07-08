@@ -12,8 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-
 public class Product {
     @Id
     private String productId;
@@ -32,5 +30,6 @@ public class Product {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="category_Id")
     private Category category;
+
 
 }

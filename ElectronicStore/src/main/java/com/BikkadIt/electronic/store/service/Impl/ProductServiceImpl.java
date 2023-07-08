@@ -32,8 +32,6 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-@Builder
-
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
@@ -41,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper modelMapper;
     @Value("${product.image.path}")
-    private String imagePath;
+    private String imagePath1;
     @Autowired
     private CategoryRepo categoryRepo;
 
@@ -82,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException(AppConstants.PRODUCT_DELETE));
-        String fullPath=imagePath+product.getProductImageName();
+        String fullPath=imagePath1+product.getProductImageName();
         try {
             Path path = Paths.get(fullPath);
             Files.delete(path);
