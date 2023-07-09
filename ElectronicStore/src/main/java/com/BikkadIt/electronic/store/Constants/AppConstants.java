@@ -19,4 +19,6 @@ public class AppConstants {
 
     public static final String CATEGORY_ID= "Category Id Incorrect !! ";
 
+    public static final String PRODUCT_ID="Product Id Incorrect !!";
+
 }
