@@ -61,7 +61,7 @@ public class CategoryController {
     public ResponseEntity<PageableResponse<CategoryDto>>getAllUser(
             @RequestParam(value="pageNumber",defaultValue = "1",required = false)int pageNumber,
             @RequestParam(value = "pageSize",defaultValue = "2",required = false)int pageSize,
-            @RequestParam(value = "sortBy",defaultValue = "tittle",required = false)String sortBy,
+            @RequestParam(value = "sortBy",defaultValue = "title",required = false)String sortBy,
             @RequestParam(value = "sortDir",defaultValue = "asc",required = false)String sortDir
     ){
         log.info("Request starting for service layer to Get All  the Category");
@@ -83,5 +83,33 @@ public class CategoryController {
 
     }
 
+    //update cat of product
+
+    @PutMapping("/{categoryId}/product/{productId}")
+    public ResponseEntity<ProductDto> updateCategoryOfProduct(
+            @PathVariable String categoryId,
+            @PathVariable String productId
+    ){
+
+        ProductDto productDto = productService.updateCategory(productId, categoryId);
+        return new ResponseEntity<>(productDto,HttpStatus.OK);
+    }
+
+    //get all product using category
+
+    @GetMapping("/{categoryId}/product")
+    public ResponseEntity<PageableResponse<ProductDto>>getProductOfCategory(
+            @PathVariable String categoryId,
+            @RequestParam(value="pageNumber",defaultValue = "1",required = false)int pageNumber,
+            @RequestParam(value = "pageSize",defaultValue = "2",required = false)int pageSize,
+            @RequestParam(value = "sortBy",defaultValue = "title",required = false)String sortBy,
+            @RequestParam(value = "sortDir",defaultValue = "asc",required = false)String sortDir)
+    {
+
+        PageableResponse<ProductDto> allOfCategory = productService
+                .getAllOfCategory(categoryId,pageNumber,pageSize,sortBy,sortDir);
+        return new ResponseEntity<>(allOfCategory,HttpStatus.OK);
+
+    }
 }
 
