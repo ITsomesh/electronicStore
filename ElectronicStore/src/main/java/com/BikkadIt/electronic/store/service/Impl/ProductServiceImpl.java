@@ -10,7 +10,6 @@ import com.BikkadIt.electronic.store.helper.Helper;
 import com.BikkadIt.electronic.store.repository.CategoryRepo;
 import com.BikkadIt.electronic.store.repository.ProductRepository;
 import com.BikkadIt.electronic.store.service.ProductService;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -142,6 +140,37 @@ public class ProductServiceImpl implements ProductService {
         return modelMapper.map(savePro,ProductDto.class);
 
     }
+
+    @Override
+    public ProductDto updateCategory(String productId, String categoryId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.PRODUCT_ID));
+        Category category = categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CATEGORY_ID));
+        product.setCategory(category);
+        Product save = productRepository.save(product);
+        return modelMapper.map(save, ProductDto.class);
+    }
+
+
+
+    @Override
+    public PageableResponse<ProductDto> getAllOfCategory(String categoryId,int pageNumber, int pageSize, String sortBy, String sortDir) {
+
+        Category category = categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CATEGORY_ID));
+
+        Sort sort = (sortDir.equalsIgnoreCase("desc"))
+                ? (Sort.by(sortBy).descending())
+                : (Sort.by(sortBy).ascending());
+        PageRequest pageable = PageRequest.of(pageNumber, pageSize,sort);
+
+        Page<Product> page = productRepository.findByCategory(category,pageable);
+
+        return Helper.getPageableResponse(page,ProductDto.class);
+    }
+
+
 
 //    @Override
 //    public PageableResponse<ProductDto> searchByTitle(String subTitle,int pageNumber,int pageSize,String sortBy,String SortDir) {
