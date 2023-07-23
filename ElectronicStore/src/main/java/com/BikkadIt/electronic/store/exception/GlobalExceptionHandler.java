@@ -22,25 +22,26 @@ public class GlobalExceptionHandler {
 
     private final Logger logger= LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponse>resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
-
-       log.info("ResourceNotFoundException Exception Handler Started !!");
+    public ResponseEntity<ApiResponse>resourceNotFoundExceptionHandler(ResourceNotFoundException ex)
+    {
+        log.info("ResourceNotFoundException Exception Handler Started !!");
         ApiResponse build = ApiResponse.builder()
                             .message(ex.getMessage())
                             .status(HttpStatus.NOT_FOUND)
-                             .success(true).build();
+                            .success(true).build();
         log.info("ResourceNotFoundException Exception Handler Ended !!");
         return new ResponseEntity<>(build,HttpStatus.NOT_FOUND);
-
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String ,Object>>handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
+    public ResponseEntity<Map<String ,Object>>handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
+    {
 
         log.info("MethodArgumentNotValidException Exception Handler Started !!");
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
         Map<String,Object> response=new HashMap<>();
-        allErrors.stream().forEach(objectError -> {
+        allErrors.stream().forEach(objectError ->
+        {
             String defaultMessage = objectError.getDefaultMessage();
             String field = ((FieldError) objectError).getField();
             response.put(field,defaultMessage);
@@ -51,7 +52,8 @@ public class GlobalExceptionHandler {
 
     //bad APi Exception
     @ExceptionHandler(BadApiRequest.class)
-    public ResponseEntity<ApiResponse>badApiResponse(BadApiRequest ex){
+    public ResponseEntity<ApiResponse>badApiResponse(BadApiRequest ex)
+    {
 
         log.info(" BadApiRequest Exception Handler Started !!");
         ApiResponse build = ApiResponse.builder()

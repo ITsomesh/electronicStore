@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -72,5 +73,12 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepo.delete(deleteCategory);
 
 
+    }
+
+    @Override
+    public CategoryDto getById(String CatId) {
+        Category category = categoryRepo.findById(CatId)
+                .orElseThrow(() -> new ResourceNotFoundException(AppConstants.CATEGORY_ID));
+        return  mapper.map(category,CategoryDto.class);
     }
 }

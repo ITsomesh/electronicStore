@@ -38,10 +38,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private ModelMapper modelMapper;
-
     @Value("${user.profile.image.path}")
     private String imagePath;
 

@@ -59,7 +59,7 @@ public class userController
 
 
     //update
-    @PostMapping("/{userId}")
+    @PutMapping("/{userId}")
     public ResponseEntity<UserDto>updateUser(
             @Valid
             @PathVariable("userId")String userId,
@@ -74,7 +74,7 @@ public class userController
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<ApiResponse>deleteUser(@PathVariable String userId){
         log.info("Request starting for service layer to delete the user {} :",userId);
-        userService.deletUser(userId);
+       userService.deletUser(userId);
         ApiResponse message = ApiResponse.builder()
                 .message(AppConstants.USER_DELETE)
                 .success(true)

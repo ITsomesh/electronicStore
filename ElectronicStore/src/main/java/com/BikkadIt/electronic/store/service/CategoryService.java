@@ -17,6 +17,8 @@ public interface CategoryService {
     //delete
     void delete(String categoryId);
 
+    CategoryDto getById(String CatId);
+
     //get Single Category Details
 
 }

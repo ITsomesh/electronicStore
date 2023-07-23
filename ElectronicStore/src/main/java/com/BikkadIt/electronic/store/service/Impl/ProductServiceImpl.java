@@ -3,8 +3,10 @@ package com.BikkadIt.electronic.store.service.Impl;
 import com.BikkadIt.electronic.store.Constants.AppConstants;
 import com.BikkadIt.electronic.store.dtos.PageableResponse;
 import com.BikkadIt.electronic.store.dtos.ProductDto;
+import com.BikkadIt.electronic.store.dtos.UserDto;
 import com.BikkadIt.electronic.store.entities.Category;
 import com.BikkadIt.electronic.store.entities.Product;
+import com.BikkadIt.electronic.store.entities.User;
 import com.BikkadIt.electronic.store.exception.ResourceNotFoundException;
 import com.BikkadIt.electronic.store.helper.Helper;
 import com.BikkadIt.electronic.store.repository.CategoryRepo;
@@ -26,7 +28,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -83,12 +87,12 @@ public class ProductServiceImpl implements ProductService {
             Path path = Paths.get(fullPath);
             Files.delete(path);
         } catch (NoSuchFileException ex){
-            log.info("User Image Not Found");
+            log.info("User Image Not Found",product);
         }
         catch (IOException e ){
             throw new RuntimeException();
         }
-        log.info("Request completed to delete productpoii");
+        log.info("Request completed to delete product",product);
         productRepository.delete(product);
     }
 
@@ -123,6 +127,10 @@ public class ProductServiceImpl implements ProductService {
     public PageableResponse<ProductDto> searchByTitle(String subTitle, int pageNumber, int pageSize, String sortBy, String SortDir) {
         return null;
     }
+
+
+    //  public PageableResponse<ProductDto> searchByTitle(String subTitle, int pageNumber, int pageSize, String sortBy, String SortDir) {
+
 
     @Override
     public ProductDto createWithCategory(ProductDto productDto, String categoryId) {
@@ -169,6 +177,7 @@ public class ProductServiceImpl implements ProductService {
 
         return Helper.getPageableResponse(page,ProductDto.class);
     }
+
 
 
 

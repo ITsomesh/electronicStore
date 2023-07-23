@@ -111,5 +111,11 @@ public class CategoryController {
         return new ResponseEntity<>(allOfCategory,HttpStatus.OK);
 
     }
+
+    @GetMapping("/{catId}")
+    public ResponseEntity<CategoryDto>getById(@PathVariable String catId){
+        CategoryDto byId = this.categoryService.getById(catId);
+        return new ResponseEntity<>(byId,HttpStatus.OK);
+    }
 }
 

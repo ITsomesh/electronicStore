@@ -2,7 +2,7 @@ package com.BikkadIt.electronic.store.exception;
 
 
 
-public class ResourceNotFoundException extends RuntimeException
+public class  ResourceNotFoundException extends RuntimeException
 {
 
     public ResourceNotFoundException(){

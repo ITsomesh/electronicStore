@@ -26,13 +26,10 @@ public class UserServiceTest {
 
     @MockBean
     private UserRepo userRepo;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private ModelMapper modelMapper;
-
     User user;
 
     @BeforeEach
@@ -62,6 +59,7 @@ public class UserServiceTest {
 
     @Test
     public void updateUserTest(){
+        //user
         String userId="";
         UserDto userDto=UserDto.builder()
                 .name("Rakesh")
@@ -74,8 +72,7 @@ public class UserServiceTest {
         Mockito.when(userRepo.save(Mockito.any())).thenReturn(user);
 
         UserDto userDto1 = userService.updateUser(userDto, userId);
-        //UserDto userDto1=modelMapper.map(user,UserDto.class);
-
+        UserDto map = modelMapper.map(user, UserDto.class);
         System.out.println(userDto1.getName());
         System.out.println(userDto1.getEmailId());
         System.out.println(userDto1.getUserImage());
@@ -85,7 +82,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deletUserTest(){
+    public void deleteUserTest(){
         String userid="asdf";
         Mockito.when(userRepo.findById("asdf")).thenReturn(Optional.of(user));
         userService.deletUser(userid);
@@ -114,7 +111,7 @@ public class UserServiceTest {
                 .build();
 
 
-        List<User>userList= Arrays.asList(user,user1,user2);
+        List<User> userList = Arrays.asList(user, user1, user2);
         Page<User> page=new PageImpl<>(userList);
         Mockito.when(userRepo.findAll((Pageable)Mockito.any())).thenReturn(page);
         PageableResponse<UserDto> allUser = userService.getAllUser(1,2,"name","ascending");
@@ -165,7 +162,7 @@ public class UserServiceTest {
                 .userImage("sop.png")
                 .build();
         String keyword="Rakesh";
-        Mockito.when(userRepo.findByNameContaining(keyword)).thenReturn(Arrays.asList(user,user1,user2));
+        Mockito.when(userRepo.findByNameContaining(keyword)).thenReturn(Arrays.asList(user1,user2,user3));
         List<UserDto> userDtos = userService.searchUser(keyword);
         Assertions.assertNotNull(userDtos);
         Assertions.assertEquals(3,userDtos.size());
