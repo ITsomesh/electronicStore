@@ -47,9 +47,11 @@ public class CartServiceImpl implements CartService {
         if(quantity<=0){
             throw new BadApiRequest("Requested quantity is not VALID");
         }
+        //fetch the product
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Not Found..."));
 
+        //fetch the user from DB
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
 
@@ -63,21 +65,25 @@ public class CartServiceImpl implements CartService {
             cart.setCreatedAt(new Date());
         }
 
+        //if cart item already present;then update
         AtomicReference<Boolean>updated=new AtomicReference<>(false);
         List<CartItem> items=cart.getItems();
         List<CartItem> updatedItem= items.stream().map(item-> {
             if(item.getProduct().getProductId().equals(productId)) {
                 item.setQuantity(quantity);
-                item.setTotalPrice(quantity*product.getPrice());
+                item.setTotalPrice(quantity*product.getDiscountedPrice());
                 updated.set(true);
 
             }
             return item;
         }).collect(Collectors.toList());
+        cart.setItems(updatedItem);
+
+        //create items
         if(!updated.get()) {
             CartItem cartItem = CartItem.builder()
                     .quantity(quantity)
-                    .totalPrice(quantity * product.getPrice())
+                    .totalPrice(quantity * product.getDiscountedPrice())
                     .cart(cart)
                     .product(product)
                     .build();
